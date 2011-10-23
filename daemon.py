@@ -5,6 +5,8 @@ from signal import SIGTERM
 import sys, atexit, os
 import inspect
 
+import syslog
+
 class Daemon:
     def __init__(self, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
         self.stdin = stdin
@@ -13,6 +15,8 @@ class Daemon:
 
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
+        syslog.openlog("test.info", 0, syslog.LOG_USER)
+        syslog.syslog(syslog.LOG_NOTICE, 'daemonizing')    
         try: 
             pid = os.fork() 
             if pid > 0:
@@ -49,17 +53,16 @@ class Daemon:
         # write pidfile
         atexit.register(self.delpid)
         pid = str(os.getpid())
+        syslog.openlog("test.info", 0, syslog.LOG_USER)
+        syslog.syslog(syslog.LOG_NOTICE, self.get_pidfile())    
         file(self.get_pidfile(),'w+').write("%s\n" % pid)
 
     def delpid(self):
         os.remove(self.get_pidfile())
 
     def get_pidfile(self):
+        # to do; should not be relative path
         ''' Return file name equal to the called module '''
-        try:
-            called_modulepath = inspect.stack()[1][1]
-        except IndexError:
-            # if run stand alone
-            called_modulepath = inspect.stack()[0][1]
+        called_modulepath = inspect.stack()[-1][1]
         called_module = os.path.split(called_modulepath)[1].split('.')[0]
-        return called_module
+        return ('.%s.pid' % (called_module,))
