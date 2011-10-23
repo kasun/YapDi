@@ -1,15 +1,15 @@
 # !/usr/bin/env python
+''' Python unix daemon module '''
 
 from signal import SIGTERM
 import sys, time, atexit, os
 
 class Daemon:
-    def __init__(self, pidfile, module, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
         self.pidfile = pidfile
-        self.update_module= module 
 
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
@@ -50,3 +50,6 @@ class Daemon:
         atexit.register(self.delpid)
         pid = str(os.getpid())
         file(self.pidfile,'w+').write("%s\n" % pid)
+
+    def delpid(self):
+        os.remove(self.pidfile)
