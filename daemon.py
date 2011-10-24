@@ -4,6 +4,7 @@
 from signal import SIGTERM
 import sys, atexit, os
 import inspect
+import time
 
 import syslog
 
@@ -12,6 +13,7 @@ class Daemon:
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
+        self.pidfile = self.get_pidfile()
 
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
@@ -54,11 +56,59 @@ class Daemon:
         atexit.register(self.delpid)
         pid = str(os.getpid())
         syslog.openlog("test.info", 0, syslog.LOG_USER)
-        syslog.syslog(syslog.LOG_NOTICE, self.get_pidfile())    
-        file(self.get_pidfile(),'w+').write("%s\n" % pid)
+        syslog.syslog(syslog.LOG_NOTICE, self.pidfile)    
+        file(self.pidfile,'w+').write("%s\n" % pid)
 
     def delpid(self):
-        os.remove(self.get_pidfile())
+        syslog.openlog("test.info", 0, syslog.LOG_USER)
+        syslog.syslog(syslog.LOG_NOTICE, 'deleting pid')    
+        syslog.syslog(syslog.LOG_NOTICE, self.pidfile)    
+        os.remove(self.pidfile)
+
+    def stop(self):
+        ''' kill running instance '''
+        # Get the pid from the pidfile
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if not pid:
+            message = "pidfile %s does not exist. Daemon not running?\n"
+            sys.stderr.write(message % self.pidfile)
+            return # not an error in a restart
+
+        # Try killing the daemon process	
+        try:
+            while 1:
+                os.kill(pid, SIGTERM)
+                time.sleep(0.1)
+        except OSError, err:
+            err = str(err)
+            if err.find("No such process") > 0:
+                if os.path.exists(self.pidfile):
+                    os.remove(self.pidfile)
+            else:
+                print str(err)
+                sys.exit(1)
+
+    def restart(self):
+        ''' force start '''
+        self.stop()
+        self.start()
+
+    def status(self):
+        try:
+            pf = file(self.pidfile,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+        except IOError:
+            pid = None
+
+        if pid:
+            return True
 
     def get_pidfile(self):
         # to do; should not be relative path
