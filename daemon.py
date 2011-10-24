@@ -65,8 +65,10 @@ class Daemon:
         syslog.syslog(syslog.LOG_NOTICE, self.pidfile)    
         os.remove(self.pidfile)
 
-    def stop(self):
+    def kill(self):
         ''' kill running instance '''
+        syslog.openlog("test.info", 0, syslog.LOG_USER)
+        syslog.syslog(syslog.LOG_NOTICE, 'trying to stop')    
         # Get the pid from the pidfile
         try:
             pf = file(self.pidfile,'r')
@@ -96,8 +98,8 @@ class Daemon:
 
     def restart(self):
         ''' force start '''
-        self.stop()
-        self.start()
+        self.kill()
+        self.daemonize()
 
     def status(self):
         try:
