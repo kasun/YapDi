@@ -6,8 +6,6 @@ import sys, atexit, os
 import inspect
 import time
 
-import syslog
-
 class Daemon:
     def __init__(self, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
         self.stdin = stdin
@@ -17,8 +15,6 @@ class Daemon:
 
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
-        syslog.openlog("test.info", 0, syslog.LOG_USER)
-        syslog.syslog(syslog.LOG_NOTICE, 'daemonizing')    
         try: 
             pid = os.fork() 
             if pid > 0:
@@ -55,26 +51,17 @@ class Daemon:
         # write pidfile
         atexit.register(self.delpid)
         pid = str(os.getpid())
-        syslog.openlog("test.info", 0, syslog.LOG_USER)
-        syslog.syslog(syslog.LOG_NOTICE, self.pidfile)    
         file(self.pidfile,'w+').write("%s\n" % pid)
 
     def delpid(self):
-        syslog.openlog("test.info", 0, syslog.LOG_USER)
-        syslog.syslog(syslog.LOG_NOTICE, 'deleting pid')    
-        syslog.syslog(syslog.LOG_NOTICE, self.pidfile)    
         os.remove(self.pidfile)
 
     def kill(self):
         ''' kill running instance '''
-        syslog.openlog("test.info", 0, syslog.LOG_USER)
-        syslog.syslog(syslog.LOG_NOTICE, 'trying to stop')    
         # Get the pid from the pidfile
         try:
             pf = file(self.pidfile,'r')
             pid = int(pf.read().strip())
-            syslog.openlog("test.info", 0, syslog.LOG_USER)
-            syslog.syslog(syslog.LOG_NOTICE, str(pid))    
             pf.close()
         except IOError:
             pid = None
@@ -96,8 +83,6 @@ class Daemon:
                     os.remove(self.pidfile)
             else:
                 print str(err)
-                syslog.openlog("test.info", 0, syslog.LOG_USER)
-                syslog.syslog(syslog.LOG_NOTICE, str(err))    
                 sys.exit(1)
 
     def status(self):
