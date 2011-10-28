@@ -73,6 +73,8 @@ class Daemon:
         try:
             pf = file(self.pidfile,'r')
             pid = int(pf.read().strip())
+            syslog.openlog("test.info", 0, syslog.LOG_USER)
+            syslog.syslog(syslog.LOG_NOTICE, str(pid))    
             pf.close()
         except IOError:
             pid = None
@@ -94,12 +96,9 @@ class Daemon:
                     os.remove(self.pidfile)
             else:
                 print str(err)
+                syslog.openlog("test.info", 0, syslog.LOG_USER)
+                syslog.syslog(syslog.LOG_NOTICE, str(err))    
                 sys.exit(1)
-
-    def restart(self):
-        ''' force start '''
-        self.kill()
-        self.daemonize()
 
     def status(self):
         try:
