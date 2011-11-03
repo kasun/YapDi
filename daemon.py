@@ -90,6 +90,10 @@ class Daemon:
                 print str(err)
                 sys.exit(1)
 
+    def restart(self):
+        self.kill()
+        self.daemonize()
+
     def status(self):
         try:
             pf = file(self.pidfile,'r')
