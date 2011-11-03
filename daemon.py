@@ -29,7 +29,7 @@ class Daemon:
                 sys.exit(0) 
         except OSError, e: 
             sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
-            sys.exit(1)
+            return False
 
         # decouple from parent environment
         os.setsid() 
@@ -43,7 +43,7 @@ class Daemon:
                 sys.exit(0) 
         except OSError, e: 
             sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
-            sys.exit(1) 
+            return False
 
         # redirect standard file descriptors
         sys.stdout.flush()
@@ -59,6 +59,7 @@ class Daemon:
         atexit.register(self.delpid)
         pid = str(os.getpid())
         file(self.pidfile,'w+').write("%s\n" % pid)
+        return True
 
     def delpid(self):
         os.remove(self.pidfile)
@@ -76,7 +77,7 @@ class Daemon:
         if not pid:
             message = "pidfile %s does not exist. Daemon not running?\n"
             sys.stderr.write(message % self.pidfile)
-            return
+            return False
 
         # Try killing the daemon process	
         try:
@@ -90,7 +91,8 @@ class Daemon:
                     os.remove(self.pidfile)
             else:
                 print str(err)
-                sys.exit(1)
+                return False
+        return True
 
     def restart(self):
         self.kill()
