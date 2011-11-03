@@ -20,7 +20,7 @@ class Daemon:
         self.pidfile = self.get_pidfile(self.called_module)
 
     def daemonize(self):
-        ''' Do the UNIX double-fork magic '''
+        ''' Daemonize the called module '''
         if self.status():
             message = "Is instance of %s already running?\n" % self.called_module
             sys.stderr.write(message)
@@ -92,11 +92,13 @@ class Daemon:
         return True
 
     def restart(self):
+        ''' Restart an instance '''
         if self.status():
             self.kill()
         self.daemonize()
 
     def status(self):
+        ''' check whether an instance is already running. If running return pid and else False '''
         try:
             pf = file(self.pidfile,'r')
             pid = int(pf.read().strip())
