@@ -120,6 +120,8 @@ class Daemon:
 
     def set_user(self, username):
         ''' Set user under which the daemonized process should run '''
+        if not isinstance(username, str):
+            raise TypeError('username should be of type str')
         self.daemon_user = username
 
     def get_calledmodule(self):
