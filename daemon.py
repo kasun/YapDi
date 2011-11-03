@@ -16,7 +16,8 @@ class Daemon:
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
-        self.pidfile = self.get_pidfile()
+        self.called_module = self.get_calledmodule()
+        self.pidfile = self.get_pidfile(self.called_module)
 
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
@@ -75,8 +76,8 @@ class Daemon:
             pid = None
 
         if not pid:
-            message = "pidfile %s does not exist. Daemon not running?\n"
-            sys.stderr.write(message % self.pidfile)
+            message = "Instance of %s not running?\n" % self.called_module
+            sys.stderr.write(message)
             return False
 
         # Try killing the daemon process	
@@ -109,8 +110,12 @@ class Daemon:
         if pid:
             return True
 
-    def get_pidfile(self):
-        ''' Return file name equal to the called module '''
+    def get_calledmodule(self):
+        ''' Returns original called module '''
         called_modulepath = inspect.stack()[-1][1]
         called_module = os.path.split(called_modulepath)[1].split('.')[0]
-        return ('.%s.pid' % (called_module,))
+        return called_module
+
+    def get_pidfile(self, module):
+        ''' Return file name to save pid given a module '''
+        return ('.%s.pid' % (module,))
