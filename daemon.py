@@ -92,7 +92,8 @@ class Daemon:
         return True
 
     def restart(self):
-        self.kill()
+        if self.status():
+            self.kill()
         self.daemonize()
 
     def status(self):
