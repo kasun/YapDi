@@ -1,5 +1,10 @@
 # !/usr/bin/env python
-''' Python unix daemon module '''
+''' 
+#
+# Python unix daemon module
+# Author Kasun Herath <kasunh01@gmail.com> 
+#
+'''
 
 from signal import SIGTERM
 import sys, atexit, os
