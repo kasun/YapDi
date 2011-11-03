@@ -22,6 +22,8 @@ class Daemon:
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
         if self.status():
+            message = "Is instance of %s already running?\n" % self.called_module
+            sys.stderr.write(message)
             return False
         try: 
             pid = os.fork() 
@@ -67,14 +69,8 @@ class Daemon:
 
     def kill(self):
         ''' kill running instance '''
-        # Get the pid from the pidfile
-        try:
-            pf = file(self.pidfile,'r')
-            pid = int(pf.read().strip())
-            pf.close()
-        except IOError:
-            pid = None
-
+        # check if an instance is not running
+        pid = self.status()
         if not pid:
             message = "Instance of %s not running?\n" % self.called_module
             sys.stderr.write(message)
@@ -106,9 +102,7 @@ class Daemon:
             pf.close()
         except IOError:
             pid = None
-
-        if pid:
-            return True
+        return pid
 
     def get_calledmodule(self):
         ''' Returns original called module '''
