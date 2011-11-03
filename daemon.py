@@ -20,6 +20,8 @@ class Daemon:
 
     def daemonize(self):
         ''' Do the UNIX double-fork magic '''
+        if self.status():
+            return False
         try: 
             pid = os.fork() 
             if pid > 0:
