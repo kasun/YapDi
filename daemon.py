@@ -74,7 +74,7 @@ class Daemon:
         if not pid:
             message = "pidfile %s does not exist. Daemon not running?\n"
             sys.stderr.write(message % self.pidfile)
-            return # not an error in a restart
+            return
 
         # Try killing the daemon process	
         try:
@@ -102,7 +102,6 @@ class Daemon:
             return True
 
     def get_pidfile(self):
-        # to do; should not be relative path
         ''' Return file name equal to the called module '''
         called_modulepath = inspect.stack()[-1][1]
         called_module = os.path.split(called_modulepath)[1].split('.')[0]
