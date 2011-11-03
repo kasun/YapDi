@@ -7,7 +7,7 @@
 '''
 
 from signal import SIGTERM
-import sys, atexit, os
+import sys, atexit, os, pwd
 import inspect
 import time
 
@@ -18,6 +18,7 @@ class Daemon:
         self.stderr = stderr
         self.called_module = self.get_calledmodule()
         self.pidfile = self.get_pidfile(self.called_module)
+        self.daemon_user = None
 
     def daemonize(self):
         ''' Daemonize the called module '''
@@ -62,6 +63,16 @@ class Daemon:
         atexit.register(self.delpid)
         pid = str(os.getpid())
         file(self.pidfile,'w+').write("%s\n" % pid)
+    
+        # If daemon user is set change current user to self.daemon_user
+        if self.daemon_user:
+            try:
+                uid = pwd.getpwnam(self.daemon_user)[2]
+                os.setuid(uid)
+            except NameError, e:
+                return False
+            except OSError, e:
+                return False
         return True
 
     def delpid(self):
@@ -106,6 +117,10 @@ class Daemon:
         except IOError:
             pid = None
         return pid
+
+    def set_user(self, username):
+        ''' Set user under which the daemonized process should run '''
+        self.daemon_user = username
 
     def get_calledmodule(self):
         ''' Returns original called module '''
