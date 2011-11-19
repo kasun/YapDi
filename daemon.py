@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 ''' 
 #
-# Python unix daemon module
+# YapDi - Yet another python Daemon implementation
 # Author Kasun Herath <kasunh01@gmail.com> 
 #
 '''
@@ -16,8 +16,12 @@ class Daemon:
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
+
+        # called module name is used to write the file used to store process id
         self.called_module = self.get_calledmodule()
         self.pidfile = self.get_pidfile(self.called_module)
+
+        # user to run under
         self.daemon_user = None
 
     def daemonize(self):
