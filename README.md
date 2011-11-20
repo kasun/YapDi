@@ -8,7 +8,7 @@ Python community is scattered with so many daemon implementations and this is on
 
 ## Installation ##
 
-A setup.py file should come in the future
+python setup.py install
 
 ## Documentation ##
 
