@@ -11,6 +11,12 @@ import sys, atexit, os, pwd
 import inspect
 import time
 
+OPERATION_SUCCESSFUL = 0
+OPERATION_FAILED = 1
+INSTANCE_ALREADY_RUNNING = 2
+INSTANCE_NOT_RUNNING = 3
+SET_USER_FAILED = 4
+
 class Daemon:
     def __init__(self, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
         self.stdin = stdin
