@@ -33,17 +33,14 @@ class Daemon:
     def daemonize(self):
         ''' Daemonize the called module '''
         if self.status():
-            message = "Is instance of %s already running?\n" % self.called_module
-            sys.stderr.write(message)
-            return False
+            return INSTANCE_ALREADY_RUNNING
         try: 
             pid = os.fork() 
             if pid > 0:
                 # exit first parent
                 sys.exit(0) 
         except OSError, e: 
-            sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
-            return False
+            return OPERATION_FAILED
 
         # decouple from parent environment
         os.setsid() 
@@ -56,8 +53,7 @@ class Daemon:
                 # exit from second parent
                 sys.exit(0) 
         except OSError, e: 
-            sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
-            return False
+            return OPERATION_FAILED
 
         # redirect standard file descriptors
         sys.stdout.flush()
@@ -80,10 +76,10 @@ class Daemon:
                 uid = pwd.getpwnam(self.daemon_user)[2]
                 os.setuid(uid)
             except NameError, e:
-                return False
+                return SET_USER_FAILED
             except OSError, e:
-                return False
-        return True
+                return SET_USER_FAILED
+        return OPERATION_SUCCESSFUL
 
     def delpid(self):
         os.remove(self.pidfile)
@@ -93,9 +89,7 @@ class Daemon:
         # check if an instance is not running
         pid = self.status()
         if not pid:
-            message = "Instance of %s not running?\n" % self.called_module
-            sys.stderr.write(message)
-            return False
+            return INSTANCE_NOT_RUNNING
 
         # Try killing the daemon process	
         try:
@@ -108,9 +102,8 @@ class Daemon:
                 if os.path.exists(self.pidfile):
                     os.remove(self.pidfile)
             else:
-                print str(err)
-                return False
-        return True
+                return OPERATION_FAILED
+        return OPERATION_SUCCESSFUL
 
     def restart(self):
         ''' Restart an instance '''
