@@ -10,6 +10,11 @@ Python community is scattered with so many daemon implementations and this is on
 
 python setup.py install
 
+## Basic Usage ##
+
+    # Creating a yapdi daemon instance
+    daemon = yapdi.Daemon()
+
 ## Documentation ##
 
 Not written yet
