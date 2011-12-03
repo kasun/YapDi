@@ -128,13 +128,6 @@ class Daemon:
             raise TypeError('username should be of type str')
         self.daemon_user = username
 
-    def get_calledmodule(self):
-        ''' Returns base path of original called module and module name'''
-        called_modulepath = inspect.stack()[-1][1]
-        basepath = os.path.split(called_modulepath)[0]
-        called_module = os.path.split(called_modulepath)[1].split('.')[0]
-        return basepath, called_module
-
     def get_pidfile(self, scriptname):
         ''' Return file name to save pid given original script name '''
         pidpath_components = scriptname.split('/')[0:-1]
