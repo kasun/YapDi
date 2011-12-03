@@ -23,9 +23,8 @@ class Daemon:
         self.stdout = stdout
         self.stderr = stderr
 
-        # called module name is used to write the file used to store process id
-        self.called_module = self.get_calledmodule()
-        self.pidfile = self.get_pidfile(self.called_module)
+        # derive file to write pid by supplying scriptname
+        self.pidfile = self.get_pidfile(sys.argv[0])
 
         # user to run under
         self.daemon_user = None
@@ -112,7 +111,7 @@ class Daemon:
         self.daemonize()
 
     def status(self):
-        ''' check whether an instance is already running. If running return pid and else False '''
+        ''' check whether an instance is already running. If running return pid or else False '''
         try:
             pf = file(self.pidfile,'r')
             pid = int(pf.read().strip())
@@ -122,17 +121,20 @@ class Daemon:
         return pid
 
     def set_user(self, username):
-        ''' Set user under which the daemonized process should run '''
+        ''' Set user under which the daemonized process should be run '''
         if not isinstance(username, str):
             raise TypeError('username should be of type str')
         self.daemon_user = username
 
     def get_calledmodule(self):
-        ''' Returns original called module '''
+        ''' Returns base path of original called module and module name'''
         called_modulepath = inspect.stack()[-1][1]
+        basepath = os.path.split(called_modulepath)[0]
         called_module = os.path.split(called_modulepath)[1].split('.')[0]
-        return called_module
+        return basepath, called_module
 
-    def get_pidfile(self, module):
-        ''' Return file name to save pid given a module '''
-        return ('.%s.pid' % (module,))
+    def get_pidfile(self, scriptname):
+        ''' Return file name to save pid given original script name '''
+        pidpath_components = scriptname.split('/')[0:-1]
+        pidpath_components.append('.yapdi.pid')
+        return '/'.join(pidpath_components)
