@@ -14,7 +14,18 @@ python setup.py install
 
     # Creating a yapdi daemon instance
     daemon = yapdi.Daemon()
+    
+    # Daemonizing an instance; Any code placed under this would get executed in daemon mode
+    daemon.daemonize()
 
-## Documentation ##
+    # Stopping a running instance
+    daemon.kill()
 
-Not written yet
+    # Restarting an instance; If an instance is already running it would be killed and started again, else would just start
+    daemon.restart()
+
+    # Checking whether an instance is running
+    if daemon.status():
+        print('An instance is already running')
+    else:
+        print('No instance is running')
