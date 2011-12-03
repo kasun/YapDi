@@ -30,7 +30,7 @@ class Daemon:
         self.daemon_user = None
 
     def daemonize(self):
-        ''' Daemonize the called module '''
+        ''' Daemonize the current process and return '''
         if self.status():
             return INSTANCE_ALREADY_RUNNING
         try: 
@@ -84,7 +84,7 @@ class Daemon:
         os.remove(self.pidfile)
 
     def kill(self):
-        ''' kill running instance '''
+        ''' kill any running instance '''
         # check if an instance is not running
         pid = self.status()
         if not pid:
@@ -105,7 +105,7 @@ class Daemon:
         return OPERATION_SUCCESSFUL
 
     def restart(self):
-        ''' Restart an instance '''
+        ''' Restart an instance; If an instance is already running kill it and start else just start '''
         if self.status():
             kill_status = self.kill()
             if kill_status == OPERATION_FAILED:
