@@ -29,3 +29,7 @@ python setup.py install
         print('An instance is already running')
     else:
         print('No instance is running')
+
+    # Running a daemonized instance as a different user; any code below these two lines would get executed in daemon mode as user 'user123'
+    daemon.set_user('user123')
+    daemon.daemonize()
