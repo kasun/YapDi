@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 ''' 
 #
-# YapDi - Yet another python Daemon implementation
+# YapDi - Yet another python Daemon implementation <https://github.com/kasun/YapDi>
 # Author Kasun Herath <kasunh01@gmail.com> 
 #
 '''
