@@ -8,7 +8,6 @@
 
 from signal import SIGTERM
 import sys, atexit, os, pwd
-import inspect
 import time
 
 OPERATION_SUCCESSFUL = 0
