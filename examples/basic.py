@@ -2,9 +2,9 @@
 
 ''' YapDi Example - Demonstrate basic YapDi functionality.
     Author - Kasun Herath <kasunh01@gmail.com>
-    USAGE - python ex_basic.py start|stop|restart
+    USAGE - python basic.py start|stop|restart
 
-    python ex_basic.py start would execute count() in daemon mode 
+    python basic.py start would execute count() in daemon mode 
     if there is no instance already running. 
 
     count() prints a counting number to syslog. To view output of
@@ -12,9 +12,9 @@
     tail -f /var/log/syslog under linux and tail -f /var/log/messages
     under BSD.
 
-    python ex_basic.py stop would kill any running instance.
+    python basic.py stop would kill any running instance.
 
-    python ex_basic.py restart would kill any running instance; and
+    python basic.py restart would kill any running instance; and
     start an instance. '''
 
 import sys
