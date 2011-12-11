@@ -15,6 +15,9 @@ python setup.py install
 
     # Creating a yapdi daemon instance
     daemon = yapdi.Daemon()
+
+    # You can also supply a pid file name at daemon instance creation time
+    daemon = yapdi.Daemon(pidfile='/var/run/.myservice.pid')
     
     # Daemonizing an instance; Any code placed under this would get executed in daemon mode
     daemon.daemonize()
@@ -34,3 +37,4 @@ python setup.py install
     # Running a daemonized instance as a different user; any code below these two lines would get executed in daemon mode as user 'user123'
     daemon.set_user('user123')
     daemon.daemonize()
+
