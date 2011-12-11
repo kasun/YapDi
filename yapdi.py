@@ -17,13 +17,16 @@ INSTANCE_NOT_RUNNING = 3
 SET_USER_FAILED = 4
 
 class Daemon:
-    def __init__(self, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
+    def __init__(self, pidfile=None, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
 
-        # derive file to write pid by supplying scriptname
-        self.pidfile = self.get_pidfile(sys.argv[0])
+        # If pidfile is not specified derive it by supplying scriptname
+        if not pidfile:
+            self.pidfile = self.get_pidfile(sys.argv[0])
+        else:
+            self.pidfile = pidfile
 
         # user to run under
         self.daemon_user = None
