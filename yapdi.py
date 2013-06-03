@@ -121,7 +121,11 @@ class Daemon:
             pid = int(pf.read().strip())
             pf.close()
         except IOError:
-            pid = None
+            return None
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            return None
         return pid
 
     def set_user(self, username):
